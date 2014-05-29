@@ -78,7 +78,7 @@ def readm3u(infile, removenum, channumbering, inputcodec):
                 chtags.append(chlanguage)
             chxmltv = buff[2]
             chicon = buff[3] if len(buff) > 3 else None
-        elif line.startswith('udp://@'):
+        elif line.startswith('rtp://@'):
             chancnt += 1
             if channumbering == CHAN_NUMBERING_GENERATE: chnumber = chancnt
             chip, chport = line[7:].rsplit(':', 1)
@@ -109,7 +109,7 @@ def writechannels():
         jssvc = {'pmt': 0,
                  'channelname': channel['name'],
                  'port': channel['port'],
-                 'interface': 'eth1',
+                 'interface': 'eth0',
                  'group': channel['ip'],
                  'mapped': 1,
                  'pcr': 0,
@@ -153,17 +153,17 @@ def writechannels39():
     #input/iptv/config
     writejson(os.path.join(path, 'config'), {
         'uuid': uuid(),
-        'skipinitscan': 1,
-        'autodiscovery': 0
+        'skipinitscan': 0,
+        'autodiscovery': 1
     })
     #input/iptv/networks/uuid()
     path = os.path.join(path, 'networks', uuid())
     if not os.path.exists(path):
         os.makedirs(path)
     writejson(os.path.join(path, 'config'), {
-        'networkname': 'IPTV network',
-        'skipinitscan': 1,
-        'autodiscovery': 0
+        'networkname': 'ORANGE',
+        'skipinitscan': 0,
+        'autodiscovery': 1
     })
     #input/iptv/networks/uuid()/muxes
     path = os.path.join(path, 'muxes')
@@ -176,12 +176,12 @@ def writechannels39():
         if not os.path.exists(muxpath):
             os.mkdir(muxpath)
         jsmux = {
-            'iptv_url': "udp://@%s:%s" % (channel['ip'], channel['port']),
-            'iptv_interface': 'eth1',
+            'iptv_url': "rtp://%s:%s" % (channel['ip'], channel['port']),
+            'iptv_interface': 'eth0',
             'iptv_atsc': 0,
             'iptv_svcname': channel['name'],
             'enabled': 1,
-            'initscan': 1  # mark mux as scanned
+            'initscan': 0  # mark mux as scanned
         }
         #input/iptv/networks/uuid()/muxes/uuid()/config file
         writejson(os.path.join(muxpath, 'config'), jsmux)
